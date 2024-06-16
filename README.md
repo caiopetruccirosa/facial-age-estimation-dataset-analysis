@@ -1,6 +1,6 @@
 # facial-age-estimation-dataset-analysis
 
-A repository containing analysis of facial images datasets with age annotation:
+A repository containing an analysis of facial images datasets with age annotation:
 
 - AgeDB
 - CACD
