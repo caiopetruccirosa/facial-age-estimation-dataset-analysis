@@ -3,5 +3,6 @@
 */__pycache__/*
 
 # container scripts
+Dockerfile
 build_image.sh
 run_container.sh
