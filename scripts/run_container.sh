@@ -10,6 +10,7 @@ WORK_DIR=${WORK_DIR:-$PWD}
 
 echo "Datasets directory: $DATA_DIR"
 echo "Work directory: $WORK_DIR"
+echo "Container Name: $CONTAINER_NAME"
 
 exec docker run \
     --gpus all \
@@ -17,5 +18,7 @@ exec docker run \
     -p "$PORT":"$PORT" \
     -v "$WORK_DIR":/work/notebooks \
     -v "$DATA_DIR":/datasets \
-    -t "$IMAGE_TAG" \
-    --name "$CONTAINER_NAME"
+    -d -it --rm \
+    --name "$CONTAINER_NAME" \
+    "$IMAGE_TAG"
+    bash

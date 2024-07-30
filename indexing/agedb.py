@@ -3,8 +3,8 @@ import pandas as pd
 from pathlib import Path
 
 
-AGEDB_DIR = '/datasets/agedb/AgeDB'
-AGEDB_CSV_PATH = '/datasets/agedb/AgeDB/data.csv'
+AGEDB_DIR = '/datasets/unofficial-agedb/AgeDB'
+AGEDB_CSV_PATH = '/datasets/unofficial-agedb/AgeDB/data.csv'
 
 
 def read_dataset(dataset_dir):

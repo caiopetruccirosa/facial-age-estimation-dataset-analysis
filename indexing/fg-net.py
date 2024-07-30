@@ -2,6 +2,8 @@ import pandas as pd
 
 from pathlib import Path
 
+FGNET_DIR = '/datasets/fg-net/FGNET/FGNET/images'
+FGNET_CSV_PATH = '/datasets/fg-net/FGNET/data.csv'
 
 def read_dataset(dataset_dir):
     filter_non_numeric = lambda s: ''.join(c for c in s if c.isdigit())
@@ -30,15 +32,15 @@ def read_dataset(dataset_dir):
                 'person_id': raw_person_id,
                 'photo_id': f'{raw_person_id}{photo_id_suffix}',
                 'age': int(raw_age),
-                'filepath': str(file.relative_to(current_path))
+                'filepath': str(file.relative_to(dataset_path))
             }
             dataset.append(data)
     return dataset
 
 def main():
-    dataset_data = read_dataset('../datasets/fg-net/FGNET/FGNET/images')
+    dataset_data = read_dataset(FGNET_DIR)
     df = pd.DataFrame(dataset_data)
-    df.to_csv('../datasets/fg-net/fg-net.csv', index=False)
+    df.to_csv(FGNET_CSV_PATH, index=False)
 
 if __name__ == '__main__':
     main()
