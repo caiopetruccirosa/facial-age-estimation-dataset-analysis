@@ -2,8 +2,15 @@ import pandas as pd
 import numpy as np
 import scipy.io as spio
 
+from pathlib import Path
 from datetime import datetime, timedelta
 
+IMDB_WIKI_DIR = '/datasets/imdb-wiki'
+IMDB_DIR = '/datasets/imdb-wiki/imdb_crop'
+WIKI_DIR = '/datasets/imdb-wiki/wiki_crop'
+IMDB_MAT_PATH = '/datasets/imdb-wiki/imdb_crop/imdb.mat'
+WIKI_MAT_PATH = '/datasets/imdb-wiki/wiki_crop/wiki.mat'
+IMDB_WIKI_CSV_PATH = '/datasets/imdb-wiki/data.csv'
 
 # got from https://gist.github.com/victorkristof/b9d794fe1ed12e708b9d
 def datenum_to_datetime(datenum):
@@ -24,8 +31,11 @@ def datenum_to_datetime(datenum):
            + timedelta(seconds=round(seconds)) \
            - timedelta(days=366)
 
-imdb_matdata = spio.loadmat('../datasets/imdb-wiki/imdb_meta/imdb/imdb.mat')
-wiki_matdata = spio.loadmat('../datasets/imdb-wiki/wiki/wiki.mat')
+imdb_matdata = spio.loadmat(IMDB_MAT_PATH)
+wiki_matdata = spio.loadmat(WIKI_MAT_PATH)
+
+imdb_np_data = imdb_matdata['imdb']
+wiki_np_data = wiki_matdata['wiki']
 
 # Information got from IMDB-WIKI homepage
 
@@ -68,15 +78,17 @@ wanted_attributes_names = [
     'name',
 ]
 
+dataset_path = Path(IMDB_WIKI_DIR)
+
 wanted_attributes_transform = {
     'dob': lambda x: int(datetime.fromordinal(int(x)-366).strftime('%Y')),
     'photo_taken': lambda x: int(x),
-    'full_path': lambda x: x[0],
     'gender': lambda x: 'M' if x == 1.0 else 'F' if x == 0.0 else 'U',
     'name': lambda x: x[0] if len(x) > 0 else '[UNKNOWN]',
 }
 
 imdb_extracted_data = []
+wanted_attributes_transform['full_path'] = lambda x: str(Path(IMDB_DIR + x[0]).relative_to(dataset_path))
 
 for i in range(len(imdb_np_data[0][0][0][0])):
     data = dict()
@@ -91,6 +103,7 @@ for i in range(len(imdb_np_data[0][0][0][0])):
         print(f'Error when processing attribute {att_name} with value {raw_data}. Error: {e}')
 
 wiki_extracted_data = []
+wanted_attributes_transform['full_path'] = lambda x: str(Path(WIKI_DIR + x[0]).relative_to(dataset_path))
 
 for i in range(len(wiki_np_data[0][0][0][0])):
     data = dict()
@@ -105,4 +118,4 @@ for i in range(len(wiki_np_data[0][0][0][0])):
         print(f'Error when processing attribute {att_name} with value {raw_data}. Error: {e}')
 
 df = pd.DataFrame(imdb_extracted_data + wiki_extracted_data)
-df.to_csv('../datasets/imdb-wiki/imdb-wiki.csv', index=False)
+df.to_csv(IMDB_WIKI_CSV_PATH, index=False)

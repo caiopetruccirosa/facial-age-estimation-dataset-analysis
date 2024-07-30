@@ -4,8 +4,9 @@ from datetime import datetime
 from pathlib import Path
 
 
-UTKFACE_DIR = '/datasets/agedb/AgeDB'
-UTKFACE_CSV_PATH = '/datasets/agedb/AgeDB/data.csv'
+UTKFACE_DIR = '/datasets/utk-face'
+UTKFACE_CSV_PATH = '/datasets/utk-face/data.csv'
+
 DATASET_DATETIME_FORMAT = '%Y%m%d%H%M%S%f'
 READABLE_DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S.%f"
 GENDER_MAPPING = {
@@ -55,7 +56,7 @@ def read_dataset(dataset_dir):
             tmp_dt = datetime.strptime(raw_datetime, DATASET_DATETIME_FORMAT)
             dt = tmp_dt.strftime(READABLE_DATETIME_FORMAT)
         except Exception as e:
-            print(f'Error parsing data attributes. Error: {e}')
+            print(f'Error parsing data attributes from file {str(file)}. Error: {e}')
             files_with_error.append(str(file))
             continue
 
@@ -64,7 +65,7 @@ def read_dataset(dataset_dir):
             'gender': gender,
             'race': race,
             'datetime': dt,
-            'filepath': str(file.relative_to(current_path))
+            'filepath': str(file.relative_to(dataset_path))
         }
         dataset.append(data)
     return dataset, files_with_error
