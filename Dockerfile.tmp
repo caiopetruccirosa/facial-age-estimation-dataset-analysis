@@ -19,21 +19,15 @@ ARG USER_GNAME=recod
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-
 # **********************
 #   Package Management  
 # **********************
 
 # Install base utilities and common apt packages
 RUN apt-get update && \
-    apt-get install -y apt-transport-https ca-certificates apt-utils && \
-    apt-get install -y software-properties-common build-essential
-
-# # Add nvtop apt repository
-# RUN add-apt-repository ppa:flexiondotorg/nvtop
-
-RUN apt-get update && \
     apt-get install -y \
+        apt-transport-https ca-certificates apt-utils \
+        software-properties-common build-essential \
         wget git nano vim ffmpeg libgl1-mesa-glx libglib2.0-0 \
         bzip2 cmake curl htop libssl-dev nvtop net-tools pandoc \
         python3-sphinx tmux tree unrar unzip xdot fonts-powerline
@@ -44,30 +38,32 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt autoremove && \
     apt clean
 
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
+
+# Put conda in path so we can use conda activate
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Create the environment:
+COPY environment.yml .
+RUN conda env create -f environment.yml
+
+# Activate the environment and make it the default
+RUN conda activate age_conda_env
+
 # System-wide python packages
 RUN python -m pip install --upgrade pip setuptools pytest && \
     python -m pip install jupyterlab ipykernel ipywidgets nbformat \
-        black kaleido lightning>=2.1.0 \
-        matplotlib numpy pandas plotly seaborn scipy \
-        torchmetrics torchvision torchsummary timm tifffile
-
-# # Install project dependencies
-# COPY requirements.txt .
-# RUN yes | pip install -r .
+        torchmetrics torchvision torchsummary
 
 # ***********************
 #   Shell Configuration  
 # ***********************
 
-# Terminal colors with xterm
-ENV TERM=xterm
-
-# Set the zsh theme
-ENV ZSH_THEME=agnoster
-
-# Run Oh-My-Zsh installation script
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
-
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "age_conda_env", "/bin/bash", "-c"]
 
 # **********************
 #   User Configuration  
@@ -90,9 +86,6 @@ RUN chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Changes the ownership of the home directory to the new user and group, ensuring that the user has the appropriate permissions for their home directory
 RUN chown -R $USER_UID:$USER_GID /home/$USERNAME
-
-# Changes the default shell for the user to zsh
-RUN chsh --shell /bin/zsh $USERNAME
 
 #  Set the default user
 USER $USERNAME
