@@ -2,12 +2,11 @@
 #       Base Image      
 # **********************
 
-# Base images possibilities use CUDA 11.3 and cuDNN 8.0:
-#     pytorch/pytorch:1.12.0-cuda11.3-cudnn8-runtime (ligher)
+# Base images possibilities use CUDA 11.3 or 11.7 and cuDNN 8.0:
+#     pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime (ligher)
 #     nvcr.io/nvidia/pytorch:22.12-py3
-# FROM pytorch/pytorch:1.12.0-cuda11.3-cudnn8-runtime
-FROM nvcr.io/nvidia/pytorch:22.12-py3
-
+# FROM nvcr.io/nvidia/pytorch:22.12-py3
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
 
 # *********************
 #     Env Variables    
