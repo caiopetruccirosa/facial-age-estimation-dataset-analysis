@@ -43,6 +43,9 @@ The directory structure used to store all datasets is the following:
 ├── /fg-net
 │   └── /FGNET (downloaded folder)
 ├── /imdb-clean (cloned repository)
+│   ├── ...
+│   ├── /data/imdb
+│   └── ...
 ├── /imdb-wiki
 │   ├── /imdb_crop (downloaded folder)
 │   └── /wiki_crop (downloaded folder)
